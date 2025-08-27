@@ -63,25 +63,25 @@ export default function AppropriationsView() {
           let overageBars = "";
           for (let i = 0; i < overageLayers; i++) {
             overageBars += `
-              <div class="overage-bar">
-                <div class="overage-inner" style="width:100%;"></div>
+              <div class="h-2.5 mt-0.5 bg-black overflow-hidden border border-dashed border-gray-600">
+                <div class="h-2.5 bg-orange-600" style="width:100%;"></div>
               </div>`;
           }
 
           if (remainderLayer > 0) {
             overageBars += `
-              <div class="overage-bar">
-                <div class="overage-inner" style="width:${remainderLayer}%;"></div>
+              <div class="h-2.5 mt-0.5 bg-black overflow-hidden border border-dashed border-gray-600">
+                <div class="h-2.5 bg-orange-600" style="width:${remainderLayer}%;"></div>
               </div>`;
           }
 
           return `
             <div>
-              <div class="progress-bar-container">
-                <div class="progress-bar-inner" style="width:${barWidth}%"></div>
+              <div class="h-2.5 bg-black overflow-hidden my-1 border border-dashed border-gray-400">
+                <div class="h-2.5 bg-cyan-400" style="width:${barWidth}%;"></div>
               </div>
               ${overageBars}
-              <div class="progress-label">
+              <div class="text-xs text-neutral-400">
                 ${formatMoney(actual)} / ${formatMoney(adopted)} (${Math.round(ratio * 100)}%)
                 ${ratio > 1 ? 'OVER BUDGET' : ''}
               </div>
@@ -89,11 +89,13 @@ export default function AppropriationsView() {
           `;
         };
 
-        const styleBox = (el: any) => el.attr("class", "ascii-box");
+        const styleBox = (el: any) => el.attr("class", "p-4 my-2 bg-neutral-900 border border-dashed border-gray-400");
 
         // Appropriations by Type
         const byS5 = d3.group(revenueData, (d: BudgetData) => d.segment5);
-        appContainer.append("h2").text("Appropriations by Type").style("color", "red");
+        appContainer.append("h2")
+          .text("Appropriations by Type")
+          .attr("class", "text-xl py-2 my-8 mb-4 text-red-500 uppercase border-t-2 border-b-2 border-dashed border-white");
 
         byS5.forEach((entries: BudgetData[], seg5: string) => {
           const totalActual = d3.sum(entries, (d: BudgetData) => +d.ytd);
@@ -101,24 +103,23 @@ export default function AppropriationsView() {
 
           const details = appContainer.append("details");
           const summary = details.append("summary")
-            .style("cursor", "pointer")
-            .style("font-weight", "bold")
-            .style("color", "#fff")
-            .style("padding", "0.5rem 0")
+            .attr("class", "py-1 text-cyan-400 font-bold uppercase cursor-pointer border-b border-dashed border-gray-400 hover:bg-neutral-900")
             .html(`${entries[0].segment5code} ${seg5} ${drawBar(totalActual, totalAdopted)}`);
 
-          const inner = details.append("div").style("margin-left", "1rem").style("margin-top", "0.5rem");
+          const inner = details.append("div").attr("class", "ml-4 mt-2");
           entries.sort((a, b) => d3.ascending(a.objectcode, b.objectcode));
           entries.forEach((d: BudgetData) => {
             const row = inner.append("div");
-            styleBox(row).style("background", "#181a1b");
+            styleBox(row).attr("class", "p-4 my-2 bg-neutral-800 border border-dashed border-gray-400");
             row.append("div").text(`${d.objectcode} - ${d.object}`);
             row.append("div").html(drawBar(+d.ytd, +d.adopted));
           });
         });
 
         // Department Appropriations by Type
-        appContainer.append("h2").text("Department Appropriations by Type").style("color", "red").style("margin-top", "2rem");
+        appContainer.append("h2")
+          .text("Department Appropriations by Type")
+          .attr("class", "text-xl py-2 my-8 mb-4 mt-8 text-red-500 uppercase border-t-2 border-b-2 border-dashed border-white");
         const byS2 = d3.group(departmentData, (d: DepartmentData) => d.segment2);
         byS2.forEach((entries: DepartmentData[], seg2: string) => {
           const deptTotalActual = d3.sum(entries, (d: DepartmentData) => +d.ytd);
@@ -126,20 +127,17 @@ export default function AppropriationsView() {
 
           const details = appContainer.append("details");
           const summary = details.append("summary")
-            .style("cursor", "pointer")
-            .style("font-weight", "bold")
-            .style("color", "#fff")
-            .style("padding", "0.5rem 0")
+            .attr("class", "py-1 text-cyan-400 font-bold uppercase cursor-pointer border-b border-dashed border-gray-400 hover:bg-neutral-900")
             .html(`${entries[0].segment2code} ${seg2 || "Unknown Dept"} ${drawBar(deptTotalActual, deptTotalAdopted)}`);
 
-          const inner = details.append("div").style("margin-left", "1rem").style("margin-top", "0.5rem");
+          const inner = details.append("div").attr("class", "ml-4 mt-2");
           const bySegment5 = d3.group(entries, (d: DepartmentData) => d.segment5);
           bySegment5.forEach((seg5entries: DepartmentData[], seg5name: string) => {
             const s5Actual = d3.sum(seg5entries, (d: DepartmentData) => +d.ytd);
             const s5Adopted = d3.sum(seg5entries, (d: DepartmentData) => +d.adopted);
             const block = inner.append("div");
-            styleBox(block).style("background", "#111");
-            block.append("div").text(seg5name || "Unknown Source").style("color", "#ccc");
+            styleBox(block).attr("class", "p-4 my-2 bg-neutral-950 border border-dashed border-gray-400");
+            block.append("div").text(seg5name || "Unknown Source").attr("class", "text-gray-300");
             block.append("div").html(drawBar(s5Actual, s5Adopted));
           });
         });
@@ -155,5 +153,5 @@ export default function AppropriationsView() {
     loadData();
   }, []);
 
-  return <div ref={containerRef} id="d3-budget-appropriations"></div>;
+  return <div ref={containerRef} className="relative z-10 max-w-4xl w-full font-mono"></div>;
 }
