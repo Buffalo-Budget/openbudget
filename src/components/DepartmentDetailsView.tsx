@@ -292,11 +292,11 @@ export default function DepartmentDetailsView() {
   }, []);
 
   return (
-    <div ref={containerRef} id="d3-budget-departments">
-      <h2 style={{ color: 'yellow' }}>Department Details</h2>
-      <label htmlFor="department-select" style={{ color: '#ccc' }}>Choose a Department:</label>
-      <select id="department-select"></select>
-      <div id="department-output"></div>
+    <div ref={containerRef} className="max-w-screen-xl px-4 box-border overflow-x-hidden">
+      <h2 className="text-xl py-2 my-8 mb-4 text-yellow-500 uppercase border-t-2 border-b-2 border-dashed border-white">Department Details</h2>
+      <label htmlFor="department-select" className="text-gray-300">Choose a Department:</label>
+      <select id="department-select" className="ml-2 p-2 bg-black text-gray-300 border border-gray-600"></select>
+      <div id="department-output" className="max-w-screen-xl px-4 box-border overflow-x-hidden"></div>
     </div>
   );
 }
